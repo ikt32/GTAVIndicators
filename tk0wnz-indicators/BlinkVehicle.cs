@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GTA;
 using GTA.Native;
 
@@ -395,14 +396,19 @@ namespace tk0wnz_indicators
 
 			if (blinkerParams.Debug == 1)
 			{
-				Utils.ShowText(0.5f, 0.450f, blinkyBois);
-				Utils.ShowText(0.5f, 0.500f, string.Format("0x{0:X}", vehicle.GetLightStates()));
-				Utils.ShowText(0.5f, 0.550f, "Currently playing animation indihazoff		: " + playinghazoff.ToString());
-				Utils.ShowText(0.5f, 0.600f, "Currently playing animation indileftoff		: " + playingloff.ToString());
-				Utils.ShowText(0.5f, 0.650f, "Currently playing animation indirightoff	: " + playingroff.ToString());
-				Utils.ShowText(0.5f, 0.700f, "Finished playing animation: indihazoff		: " + finishedhazoff.ToString());
-				Utils.ShowText(0.5f, 0.750f, "Finished playing animation: indileftoff		: " + finishedloff.ToString());
-				Utils.ShowText(0.5f, 0.800f, "Finished playing animation: indirightoff	: " + finishedroff.ToString());
+				var pos = vehicle.Position;
+				pos.Z += 1.0f;
+				Utils.ShowText3D(pos, 10.0f,
+					new List<string>
+					{
+						$"0x{vehicle.GetLightStates():X}",
+						$"Playing animation:  indihazoff: {playinghazoff}",
+						$"Playing animation:  indileftoff: {playingloff}",
+						$"Playing animation:  indirightoff: {playingroff}",
+						$"Finished animation: indihazoff: {finishedhazoff}",
+						$"Finished animation: indileftoff: {finishedloff}",
+						$"Finished animation: indirightoff: {finishedroff}",
+					});
 			}
 		}
 

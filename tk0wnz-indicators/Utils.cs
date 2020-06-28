@@ -81,9 +81,57 @@ namespace tk0wnz_indicators
     {
         public static unsafe UInt32 GetLightStates(this Vehicle veh)
         {
-            // uint32_t?
-            const ulong LightStatesOffset = 0x928;
-            return *(UInt32*)((ulong)veh.MemoryAddress + LightStatesOffset);
+            const ulong offset = 0x928;
+            return *(UInt32*)((ulong)veh.MemoryAddress + offset);
+        }
+
+        /***
+         * CVeh + 0x84c (1604 - 1868) (Damage)
+         * 0 - Left Headlight
+         * 1 - Right Headlight
+         * 2 - Left Taillight
+         * 3 - Right Taillight
+         * 4 - Front Left Indicator
+         * 5 - Front Right Indicator
+         * 6 - Rear Left Indicator
+         * 7 - Rear Right Indicator
+         * 8 - Left Brake
+         * 9 - Right Brake
+         * 10 - Center Brake
+         * 11 - Left Reverse
+         * 12 - Right Reverse
+         * 13 - ???
+         * 14 - ???
+         * 15 - ???
+         * 16 - ???
+         * 17 - Left fog/far  | 4fog Left  1/2 | 3fog left
+         * 18 - Right fog/far | 4fog Left  1/2 | 3fog center
+         * 19 - ???           | 4fog Right 1/2 | 3fog right
+         * 20 - ???           | 4fog Right 1/2 | 
+         * 21 - Taxi
+         * 22 - ???
+         * 23 - ???
+         * 24 - ???
+         * 25 - ???
+         * 26 - ???
+         * 27 - ???
+         * 28 - ???
+         * 29 - ???
+         * 30 - ???
+         * 31 - ???
+         *
+         */
+
+        public static unsafe UInt32 GetLightDamageStates(this Vehicle veh)
+        {
+            const ulong offset = 0x84c;
+            return *(UInt32*)((ulong)veh.MemoryAddress + offset);
+        }
+
+        public static unsafe void SetLightDamageStates(this Vehicle veh, UInt32 value)
+        {
+            const ulong offset = 0x84c;
+            *(UInt32*)((ulong)veh.MemoryAddress + offset) = value;
         }
     }
 }

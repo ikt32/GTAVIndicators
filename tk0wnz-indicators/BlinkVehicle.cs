@@ -387,6 +387,16 @@ namespace tk0wnz_indicators
 						});
 					}
 
+					// Crappy workaround, but apparently calling raise/lower will reset the animation states...
+					if (playinghazoff && hazOffTime == 1.0f ||
+					    playingloff   && lOffTime   == 1.0f ||
+					    playingroff   && rOffTime   == 1.0f)
+					{
+						if (currRoofState == 0)
+							Function.Call(Hash.LOWER_CONVERTIBLE_ROOF, vehicle, false);
+						else
+							Function.Call(Hash.RAISE_CONVERTIBLE_ROOF, vehicle, false);
+					}
 
 					mIndicatorLeft = false;
 					mIndicatorRight = false;

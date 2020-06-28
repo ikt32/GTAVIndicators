@@ -53,6 +53,7 @@
     <Compile Include="BlinkVehicle.cs" />
     <Compile Include="Indicators.cs" />
     <Compile Include="Timer.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

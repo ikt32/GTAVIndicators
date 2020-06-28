@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using ExtensionMethods;
 using GTA;
-using GTA.Native;
 using tk0wnz_indicators;
 
 public class BlinkerStates : Script
@@ -94,34 +91,5 @@ public class BlinkerStates : Script
 		{
 			blinkVehicles.Remove(vehToDelete);
 		}
-	}
-}
-
-namespace ExtensionMethods
-{
-	public static class Extensions
-	{
-		public static unsafe UInt32 GetLightStates(this Vehicle veh)
-		{
-			// uint32_t?
-			const ulong LightStatesOffset = 0x928;
-			return *(UInt32*)((ulong)veh.MemoryAddress + LightStatesOffset);
-		}
-	}
-}
-
-public static class Utils
-{
-	public static void ShowText(float x, float y, string text, float size = 0.5f)
-	{
-		Function.Call(Hash.SET_TEXT_FONT, 0);
-		Function.Call(Hash.SET_TEXT_SCALE, size, size);
-		Function.Call(Hash.SET_TEXT_COLOUR, 255, 255, 255, 255);
-		Function.Call(Hash.SET_TEXT_WRAP, 0.0, 1.0);
-		Function.Call(Hash.SET_TEXT_CENTRE, 0);
-		Function.Call(Hash.SET_TEXT_OUTLINE, true);
-		Function.Call(Hash.BEGIN_TEXT_COMMAND_DISPLAY_TEXT, "STRING");
-		Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, text);
-		Function.Call(Hash.END_TEXT_COMMAND_DISPLAY_TEXT, x, y);
 	}
 }

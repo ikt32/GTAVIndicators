@@ -161,26 +161,26 @@ namespace tk0wnz_indicators
 		void UpdateAnimatedIndicators(Vehicle vehicle)
 		{
 			UInt32 lightStates = vehicle.GetLightStates();
-			string blinkyBois = "None";
+			string blinkStateTxt = "???";
 
 			bool playinghazoff = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazoff", 3);
 			bool playingloff = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indileftoff", 3);
 			bool playingroff = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirightoff", 3);
-			bool finishedhazoff = Function.Call<bool>(Hash.HAS_ENTITY_ANIM_FINISHED, vehicle, "va_" + blinkerParams.ModelName, "indihazoff", 3);
-			bool finishedloff = Function.Call<bool>(Hash.HAS_ENTITY_ANIM_FINISHED, vehicle, "va_" + blinkerParams.ModelName, "indileftoff", 3);
-			bool finishedroff = Function.Call<bool>(Hash.HAS_ENTITY_ANIM_FINISHED, vehicle, "va_" + blinkerParams.ModelName, "indirightoff", 3);
+			bool playinghazon = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazon", 3);
+			bool playinglon = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indilefton", 3);
+			bool playingron = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirighton", 3);
 
 			if ((lightStates & 0x300) == 0x300)
 			{
-				blinkyBois = "Hazard lights are detected";
+				blinkStateTxt = "Hazard";
 				if (rIndicatorRight)
 				{
-					if (playingroff == false && finishedroff == false)
+					if (!playingroff)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirightoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedroff == true)
+					else
 					{
 						rIndicatorRight = false;
 						timerSet = false;
@@ -188,12 +188,12 @@ namespace tk0wnz_indicators
 				}
 				else if (rIndicatorLeft)
 				{
-					if (playingloff == false && finishedloff == false)
+					if (playingloff == false)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indileftoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedloff == true)
+					else
 					{
 						rIndicatorLeft = false;
 						timerSet = false;
@@ -229,15 +229,15 @@ namespace tk0wnz_indicators
 			}
 			else if ((lightStates & 0x100) == 0x100)
 			{
-				blinkyBois = "Left indicator is detected";
+				blinkStateTxt = "Left indicator";
 				if (rIndicatorRight)
 				{
-					if (playingroff == false && finishedroff == false)
+					if (playingroff == false)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirightoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedroff == true)
+					else
 					{
 						rIndicatorRight = false;
 						timerSet = false;
@@ -245,12 +245,12 @@ namespace tk0wnz_indicators
 				}
 				else if (rIndicatorHaz)
 				{
-					if (playinghazoff == false && finishedhazoff == false)
+					if (playinghazoff == false)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedhazoff == true)
+					else
 					{
 						rIndicatorHaz = false;
 						timerSet = false;
@@ -286,15 +286,15 @@ namespace tk0wnz_indicators
 			}
 			else if ((lightStates & 0x200) == 0x200)
 			{
-				blinkyBois = "Right indicator is detected";
+				blinkStateTxt = "Right indicator";
 				if (rIndicatorLeft)
 				{
-					if (playingloff == false && finishedloff == false)
+					if (playingloff == false)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indileftoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedloff == true)
+					else
 					{
 						rIndicatorLeft = false;
 						timerSet = false;
@@ -302,12 +302,12 @@ namespace tk0wnz_indicators
 				}
 				else if (rIndicatorHaz)
 				{
-					if (playinghazoff == false && finishedhazoff == false)
+					if (playinghazoff == false)
 					{
 						Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazoff");
 						Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					}
-					else if (finishedhazoff == true)
+					else
 					{
 						rIndicatorHaz = false;
 						timerSet = false;
@@ -343,55 +343,59 @@ namespace tk0wnz_indicators
 			}
 			else
 			{
-				if (rIndicatorLeft && !finishedloff)
+				blinkStateTxt = "Off";
+
+				if (rIndicatorLeft)
 				{
 					Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indileftoff");
 					Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					rIndicatorLeft = false;
 				}
-				else if (rIndicatorRight && !finishedroff)
+				else if (rIndicatorRight)
 				{
 					Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirightoff");
 					Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					rIndicatorRight = false;
 				}
-				else if (rIndicatorHaz && !finishedloff)
+				else if (rIndicatorHaz)
 				{
 					Function.Call(Hash.TASK_VEHICLE_PLAY_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazoff");
-					Function.Call(Hash.FORCE_ENTITY_AI_AND_ANIMATION_UPDATE, vehicle);
 					rIndicatorHaz = false;
 				}
+				else
+				{
+					float hazOffTime = Function.Call<float>(Hash.GET_ENTITY_ANIM_CURRENT_TIME, vehicle,
+						"va_" + blinkerParams.ModelName, "indihazoff");
+					float lOffTime = Function.Call<float>(Hash.GET_ENTITY_ANIM_CURRENT_TIME, vehicle,
+						"va_" + blinkerParams.ModelName, "indileftoff");
+					float rOffTime = Function.Call<float>(Hash.GET_ENTITY_ANIM_CURRENT_TIME, vehicle,
+						"va_" + blinkerParams.ModelName, "indirightoff");
 
-				bool playinghazon = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indihazon", 3);
-				bool playinglon = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indilefton", 3);
-				bool playingron = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, "va_" + blinkerParams.ModelName, "indirighton", 3);
+					var pos = vehicle.Position;
+					pos.Z += 2.0f;
 
-				if (playingloff)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indileftoff", -8.0f);
+					int currRoofState = Function.Call<int>(Hash.GET_CONVERTIBLE_ROOF_STATE, vehicle);
 
-				if (playingroff)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indirightoff", -8.0f);
-
-				if (playinghazoff)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indihazoff", -8.0f);
-
-				if (playinglon)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indilefton", -8.0f);
-
-				if (playingron)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indirighton", -8.0f);
-
-				if (playinghazon)
-					Function.Call(Hash.STOP_ANIM_TASK, vehicle, "va_" + blinkerParams.ModelName, "indihazon", -8.0f);
+					if (blinkerParams.Debug == 1)
+					{
+						Utils.ShowText3D(pos, 10.0f, new List<string>
+						{
+							$"{currRoofState}",
+							$"{playinghazoff} {hazOffTime}",
+							$"{playingloff} {lOffTime}",
+							$"{playingroff} {rOffTime}",
+						});
+					}
 
 
-				mIndicatorLeft = false;
-				mIndicatorRight = false;
-				mIndicatorHaz = false;
-				rIndicatorLeft = false;
-				rIndicatorRight = false;
-				rIndicatorHaz = false;
-				timerSet = false;
+					mIndicatorLeft = false;
+					mIndicatorRight = false;
+					mIndicatorHaz = false;
+					rIndicatorLeft = false;
+					rIndicatorRight = false;
+					rIndicatorHaz = false;
+					timerSet = false;
+				}
 			}
 
 			if (blinkerParams.Debug == 1)
@@ -401,13 +405,13 @@ namespace tk0wnz_indicators
 				Utils.ShowText3D(pos, 10.0f,
 					new List<string>
 					{
-						$"0x{vehicle.GetLightStates():X}",
+						$"0x{vehicle.GetLightStates():X} {blinkStateTxt}",
 						$"Playing animation:  indihazoff: {playinghazoff}",
 						$"Playing animation:  indileftoff: {playingloff}",
 						$"Playing animation:  indirightoff: {playingroff}",
-						$"Finished animation: indihazoff: {finishedhazoff}",
-						$"Finished animation: indileftoff: {finishedloff}",
-						$"Finished animation: indirightoff: {finishedroff}",
+						$"Finished animation: indihazon: {playinghazon}",
+						$"Finished animation: indilefton: {playinglon}",
+						$"Finished animation: indirighton: {playingron}",
 					});
 			}
 		}

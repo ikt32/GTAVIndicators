@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,9 +80,27 @@ namespace tk0wnz_indicators
 
     public static class Extensions
     {
+        private static Dictionary<string, uint> Offsets =
+            new Dictionary<string, uint>();
+
+        private static unsafe void GetAndSetOffset(string field,
+            string pattern, long off1, long off2)
+        {
+            ulong addr = Memory.FindPattern(pattern);
+            Offsets[field] = addr == 0 ? 0 : (uint)(*(uint*)((long)addr + off1) + off2);
+            Logger.Log(Logger.Level.DEBUG, $"[VehExt] Found address [0x{Offsets[field]:X}] for [{field}]");
+        }
+
+        public static void Init()
+        {
+            GetAndSetOffset("LightStatesOffset",
+                "FD 02 DB 08 98 ? ? ? ? 48 8B 5C 24 30",
+                -4, -1);
+        }
+
         public static unsafe UInt32 GetLightStates(this Vehicle veh)
         {
-            const ulong offset = 0x928;
+            ulong offset = Offsets["LightStatesOffset"];
             return *(UInt32*)((ulong)veh.MemoryAddress + offset);
         }
 
@@ -132,6 +151,53 @@ namespace tk0wnz_indicators
         {
             const ulong offset = 0x84c;
             *(UInt32*)((ulong)veh.MemoryAddress + offset) = value;
+        }
+    }
+
+    public static class Memory
+    {
+        public static unsafe ulong FindPattern(string pattern, string mask)
+        {
+            ProcessModule module = Process.GetCurrentProcess().MainModule;
+
+            ulong address = (ulong)module.BaseAddress.ToInt64();
+            ulong endAddress = address + (ulong)module.ModuleMemorySize;
+
+            for (; address < endAddress; address++)
+            {
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    if (mask[i] != '?' && ((byte*)address)[i] != pattern[i])
+                        break;
+                    else if (i + 1 == pattern.Length)
+                        return address;
+                }
+            }
+
+            return 0;
+        }
+
+        public static unsafe ulong FindPattern(string pattern)
+        {
+            List<string> bytesStr = pattern.Split(' ').ToList();
+
+            ProcessModule module = Process.GetCurrentProcess().MainModule;
+
+            ulong address = (ulong)module.BaseAddress.ToInt64();
+            ulong endAddress = address + (ulong)module.ModuleMemorySize;
+
+            for (; address < endAddress; address++)
+            {
+                for (int i = 0; i < bytesStr.Count; i++)
+                {
+                    if (bytesStr[i] != "?" && ((byte*)address)[i] != Convert.ToUInt32(bytesStr[i], 16))
+                        break;
+                    else if (i + 1 == bytesStr.Count)
+                        return address;
+                }
+            }
+
+            return 0;
         }
     }
 }

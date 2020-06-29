@@ -47,11 +47,13 @@
     <Reference Include="ScriptHookVDotNet3, Version=3.0.2.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\ScriptHookVDotNet3.3.0.2\lib\net48\ScriptHookVDotNet3.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlinkerParams.cs" />
     <Compile Include="BlinkVehicle.cs" />
     <Compile Include="Indicators.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

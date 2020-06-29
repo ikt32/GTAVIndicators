@@ -25,6 +25,11 @@ public class BlinkerStates : Script
 
 	void ReadIni()
 	{
+		Logger.Clear();
+		Logger.Log(Logger.Level.INFO, $"Indicators");
+		Logger.Log(Logger.Level.INFO, $"Game version {Game.Version}");
+		Extensions.Init();
+
 		settings = ScriptSettings.Load("scripts\\tk0wnz-indicators.ini");
 		int i = 0;
 		while (true)

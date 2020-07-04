@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GTA;
 using GTA.Native;
@@ -12,7 +12,7 @@ namespace tk0wnz_indicators
 
 	    private string animLib;
 
-		private bool mIndicatorLeft = false;
+	    private bool mIndicatorLeft = false;
 	    private bool mIndicatorRight = false;
 	    private bool mIndicatorHaz = false;
 	    private bool rIndicatorLeft = false;
@@ -20,9 +20,10 @@ namespace tk0wnz_indicators
 	    private bool rIndicatorHaz = false;
 	    private bool timerSet = false;
 	    private DateTime Beginning = DateTime.Now;
+	    private bool currEngineState = false;
 
-		
-		public BlinkVehicle(Vehicle vehicle, BlinkerParams blinkerParams)
+
+	    public BlinkVehicle(Vehicle vehicle, BlinkerParams blinkerParams)
         {
             this.Vehicle = vehicle;
             this.blinkerParams = blinkerParams;
@@ -32,6 +33,7 @@ namespace tk0wnz_indicators
 
         public void Update()
         {
+			currEngineState = Function.Call<bool>(Hash.GET_IS_VEHICLE_ENGINE_RUNNING, this.Vehicle);
 	        if (blinkerParams.Duration == 0)
 	        { // Using vanilla indicators
 		        UpdateVanillaIndicators(this.Vehicle);
@@ -45,7 +47,7 @@ namespace tk0wnz_indicators
 		void UpdateVanillaIndicators(Vehicle vehicle)
 		{
 			UInt32 lightStates = vehicle.GetLightStates();
-			if ((lightStates & 0x300) == 0x300)
+			if ((lightStates & 0x300) == 0x300 && currEngineState == true)
 			{
 				//blinkyBois = "Hazard";
 				if (!mIndicatorHaz && rIndicatorRight)
@@ -74,7 +76,7 @@ namespace tk0wnz_indicators
 					rIndicatorHaz = true;
 				}
 			}
-			else if ((lightStates & 0x100) == 0x100)
+			else if ((lightStates & 0x100) == 0x100 && currEngineState == true)
 			{
 				//blinkyBois = "Left";
 				if (!mIndicatorLeft && rIndicatorHaz)
@@ -103,7 +105,7 @@ namespace tk0wnz_indicators
 					rIndicatorLeft = true;
 				}
 			}
-			else if ((lightStates & 0x200) == 0x200)
+			else if ((lightStates & 0x200) == 0x200 && currEngineState == true)
 			{
 				//blinkyBois = "Right";
 				if (!mIndicatorRight && rIndicatorHaz)
@@ -174,7 +176,7 @@ namespace tk0wnz_indicators
 			bool playinglon = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, animLib, "indilefton", 3);
 			bool playingron = Function.Call<bool>(Hash.IS_ENTITY_PLAYING_ANIM, vehicle, animLib, "indirighton", 3);
 
-			if ((lightStates & 0x300) == 0x300)
+			if ((lightStates & 0x300) == 0x300 && currEngineState == true)
 			{
 				blinkStateTxt = "Hazard";
 				if (rIndicatorRight)
@@ -228,7 +230,7 @@ namespace tk0wnz_indicators
 					mIndicatorRight = false;
 				}
 			}
-			else if ((lightStates & 0x100) == 0x100)
+			else if ((lightStates & 0x100) == 0x100 && currEngineState == true)
 			{
 				blinkStateTxt = "Left indicator";
 				if (rIndicatorRight)
@@ -281,7 +283,7 @@ namespace tk0wnz_indicators
 					mIndicatorRight = false;
 				}
 			}
-			else if ((lightStates & 0x200) == 0x200)
+			else if ((lightStates & 0x200) == 0x200 && currEngineState == true)
 			{
 				blinkStateTxt = "Right indicator";
 				if (rIndicatorLeft)
